@@ -258,13 +258,16 @@ class GenerateDocumentation extends Command
         $routes = $this->getRoutes();
         $bindings = $this->getBindings();
         $parsedRoutes = [];
+        $routesPrefix = explode('|', $routePrefix);
         foreach ($routes as $route) {
-            if (in_array($route->getName(), $allowedRoutes) || str_is($routePrefix, $generator->getUri($route)) || in_array($middleware, $route->middleware())) {
-                if ($this->isValidRoute($route) && $this->isRouteVisibleForDocumentation($route->getAction()['uses'])) {
-                    $parsedRoutes[] = $generator->processRoute($route, $bindings, $this->option('header'), $withResponse);
-                    $this->info('Processed route: ['.implode(',', $generator->getMethods($route)).'] '.$generator->getUri($route));
-                } else {
-                    $this->warn('Skipping route: ['.implode(',', $generator->getMethods($route)).'] '.$generator->getUri($route));
+            foreach ($routesPrefix as $routePrefix) {
+                if (in_array($route->getName(), $allowedRoutes) || str_is($routePrefix, $generator->getUri($route)) || in_array($middleware, $route->middleware())) {
+                    if ($this->isValidRoute($route) && $this->isRouteVisibleForDocumentation($route->getAction()['uses'])) {
+                        $parsedRoutes[] = $generator->processRoute($route, $bindings, $this->option('header'), $withResponse);
+                        $this->info('Processed route: ['.implode(',', $generator->getMethods($route)).'] '.$generator->getUri($route));
+                    } else {
+                        $this->warn('Skipping route: ['.implode(',', $generator->getMethods($route)).'] '.$generator->getUri($route));
+                    }
                 }
             }
         }

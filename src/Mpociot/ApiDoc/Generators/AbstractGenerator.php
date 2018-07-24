@@ -189,6 +189,7 @@ abstract class AbstractGenerator
      * @param  array $bindings
      *
      * @return array
+     * @throws \ReflectionException
      */
     protected function getRouteRules($route, $bindings)
     {

@@ -2,6 +2,7 @@
 
 namespace Mpociot\ApiDoc\Commands;
 
+use Illuminate\Routing\RouteCollection;
 use ReflectionClass;
 use Illuminate\Console\Command;
 use Mpociot\Reflection\DocBlock;
@@ -234,7 +235,7 @@ class GenerateDocumentation extends Command
     }
 
     /**
-     * @return mixed
+     * @return RouteCollection
      */
     private function getRoutes()
     {

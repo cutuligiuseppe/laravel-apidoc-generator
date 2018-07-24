@@ -49,6 +49,7 @@ class LaravelGenerator extends AbstractGenerator
      * @param bool $withResponse
      *
      * @return array
+     * @throws \ReflectionException
      */
     public function processRoute($route, $bindings = [], $headers = [], $withResponse = true)
     {
@@ -246,6 +247,7 @@ class LaravelGenerator extends AbstractGenerator
      * @param  array $bindings
      *
      * @return array
+     * @throws \ReflectionException
      */
     protected function getRouteRules($route, $bindings)
     {
@@ -276,5 +278,38 @@ class LaravelGenerator extends AbstractGenerator
         }
 
         return [];
+    }
+
+    /**
+     * @param array $routeData
+     * @param array $routeAction
+     * @param array $bindings
+     *
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    protected function getParameters($routeData, $routeAction, $bindings)
+    {
+        $attributes = $this->getRouteRules($routeAction['uses'], $bindings);
+        foreach ($attributes as $attribute => $rules) {
+            $attributeData = [
+                'required' => false,
+                'type' => null,
+                'default' => '',
+                'value' => '',
+                'description' => [],
+            ];
+            $rules = explode('|', $rules);
+            foreach ($rules as $ruleName => $rule) {
+                $this->parseRule($rule, $attribute, $attributeData, $routeData['id']);
+            }
+
+            if (!empty(trans()->hasForLocale('doc.' . $attribute))) {
+                $attributeData['description'][] = trans('doc.' . $attribute);
+            }
+            $routeData['parameters'][$attribute] = $attributeData;
+        }
+
+        return $routeData;
     }
 }
